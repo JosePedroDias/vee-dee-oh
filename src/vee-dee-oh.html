@@ -157,14 +157,10 @@
             for (i = 0; i < I; ++i) {
                 source = sources[i];
                 if (!!el.play) {
-                    // android hack for HLS
-                    if (isAndroid && source.type === 'application/x-mpegurl') {
-                        this._src  = source.src;
-                        this._type = '';
-                        this._wireHtml5(autoplay);
-                        return;
-                    }
-                    if ( !!( el.canPlayType(source.type).replace(/^no$/, '') ) ) {
+                    if (
+                        !!( el.canPlayType(source.type).replace(/^no$/, '') )   ||
+                          (isAndroid && source.type === 'application/x-mpegurl') // android hack for HLS
+                    ) {
                         this._src  = source.src;
                         this._type = source.type;
                         this._wireHtml5(autoplay);

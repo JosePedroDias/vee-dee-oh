@@ -32,5 +32,6 @@ Check the [index page](http://josepedrodias.github.io/vee-dee-oh/index.html)
 
 ## Nice to Haves
 
-* hide/protect _ vars?
+* fix live pause in rtmp
 * click event from videojs should return coords O:)
+* hide/protect _ vars?
