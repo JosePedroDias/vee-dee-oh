@@ -27,8 +27,15 @@ Check the [index page](http://josepedrodias.github.io/vee-dee-oh/index.html)
 
 ## TODO
 
-* poster support borked on vjs -> use background-image instead
 * elect best impl for given sources
-* fullscreeen support
+* read sources and choose appropriate
+* detect flash support
+* display error and video sources in vee-dee-oh if not supported mime types
+* poster support borked on vjs -> use background-image instead
+* fullscreen support
+
+
+## Nice to Haves
+
 * hide/protect _ vars?
 * click event from videojs should return coords O:)
