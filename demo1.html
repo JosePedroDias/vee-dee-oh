@@ -35,7 +35,7 @@
         <h1>vee-dee-oh element demo 1</h1>
 
         <div>
-            <vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" impl="flash" autoplay>
+            <vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" autoplay>
                 <source type="video/mp4"  src="http://vjs.zencdn.net/v/oceans.mp4">
                 <source type="video/webm" src="http://vjs.zencdn.net/v/oceans.webm">
             </vee-dee-oh>
@@ -47,8 +47,8 @@
         <label for="size">size</label>
         <span id="size"></span><br/>
 
-        <label for="last-event">last event</label>
-        <span id="last-event"></span>
+        <label for="current-time">current time</label>
+        <span id="current-time"></span>
         
         <script type="text/javascript">
             var QS = function(sel) { return document.querySelector(sel); };
@@ -56,9 +56,9 @@
             var vEl = QS('vee-dee-oh');
 
             vEl.addEventListener('click',          function() { if (vEl.isPlaying()) { this.pause(); } else { this.play(); } });
-            vEl.addEventListener('durationchange', function() { QS('#duration'  ).innerHTML = vEl.duration.toFixed(1) + ' s'; });
-            vEl.addEventListener('loadedmetadata', function() { QS('#size'      ).innerHTML = [vEl.videoWidth, vEl.videoHeight].join('x') + ' px'; });
-            vEl.addEventListener('timeupdate',     function() { QS('#last-event').innerHTML = vEl.currentTime.toFixed(1) + ' s'; });
+            vEl.addEventListener('durationchange', function() { QS('#duration'    ).innerHTML = vEl.duration.toFixed(1) + ' s'; });
+            vEl.addEventListener('loadedmetadata', function() { QS('#size'        ).innerHTML = [vEl.videoWidth, vEl.videoHeight].join('x') + ' px'; });
+            vEl.addEventListener('timeupdate',     function() { QS('#current-time').innerHTML = vEl.currentTime.toFixed(1) + ' s'; });
         </script>
     </body>
 </html>
