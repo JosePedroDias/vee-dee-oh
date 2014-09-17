@@ -8,7 +8,8 @@
         <!-- Importing Web Component's Polyfill -->
         <script src="ext/platform.js"></script>
         <!--<script type="text/javascript" src="http://www.polymer-project.org/components/platform/platform.js"></script>-->
-        <script src="ext/embedSWF.js"></script>
+        <script src="ext/SWF.js"></script>
+        <script src="ext/FS.js"></script>
 
         <!-- Importing Custom Elements -->
         <link rel="import" href="src/vee-dee-oh.html">
@@ -43,6 +44,12 @@
                 height:   200px; /* video height */
                 position: relative;
             }
+
+            :-webkit-full-screen { width: 100%; height: 100%; }
+               :-moz-full-screen { width: 100%; height: 100%; }
+                 :-ms-fullscreen { width: 100%; height: 100%; }
+                    :full-screen { width: 100%; height: 100%; }
+                     :fullscreen { width: 100%; height: 100%; }
 
             .gui {
                 background-color: #444;
@@ -87,6 +94,7 @@
 
             <div class="gui">
                 <button id="play-pause-button"><i class="fa fa-inverse fa-play"></i></button>
+                <button id="resize-button"><i class="fa fa-inverse fa-expand"></i></button>
                 <span id="time-span"></span>
                 <span id="duration-span"></span>
             </div>
@@ -94,7 +102,12 @@
             <paper-slider id="volume-slider" min="0" value="1000" max="1000"></paper-slider>
             <paper-slider id="time-slider"   min="0" value="0"    max="1000"></paper-slider>
         </div>
-        
+
+        <button onclick="load2([{src:'http://www.808.dk/pics/video/gizmo.mp4', type:'video/mp4'}, {src:'http://www.808.dk/pics/video/gizmo.webm', type:'video/webm'}])">load regular video 1</button>
+        <button onclick="load2([{src:'http://vjs.zencdn.net/v/oceans.mp4', type:'video/mp4'}, {src:'http://vjs.zencdn.net/v/oceans.webm', type:'video/webm'}])">load regular video 2</button>
+        <button onclick="load2([{src:'http://213.13.26.42:1935/live/santuario.stream/playlist.m3u8', type:'application/x-mpegurl'}, {src:'rtmp://213.13.26.42/live/santuario.stream', type:'rtmp/mp4'}])">load live video 1</button>
+        <button onclick="load2([{src:'rtmp://77.89.89.10/rtplive/raszkow.stream', type:'rtmp/mp4'}])">load live video 2</button>
+
         <script type="text/javascript">
             var QS = function(sel) { return document.querySelector(sel); };
 
@@ -121,10 +134,17 @@
 
             var videoEl           = QS('#video');
             var playPauseButtonEl = QS('#play-pause-button');
+            var resizeButtonEl    = QS('#resize-button');
             var volumeSliderEl    = QS('#volume-slider');
             var timeSliderEl      = QS('#time-slider');
             var timeSpanEl        = QS('#time-span');
             var durationSpanEl    = QS('#duration-span');
+
+            var load2 = function(o) {
+                videoEl.autoplay = true;
+                videoEl.poster = ''; 
+                videoEl.load(o);
+            };
 
 
 
@@ -141,14 +161,22 @@
                 }
             });
 
-            playPauseButtonEl.addEventListener('click', function(ev) {
-                if (videoEl.isPlaying()) {
-                    videoEl.pause();
-                }
-                else {
-                    videoEl.play();
-                }
-            })
+            var playPause = function() {
+                if (videoEl.isPlaying()) { videoEl.pause(); }
+                else {                     videoEl.play();  }
+            };
+            playPauseButtonEl.addEventListener('click', playPause);
+            videoEl.addEventListener(          'click', playPause);
+
+            resizeButtonEl.addEventListener('click', function(ev) {
+                FS.toggle( QS('.super-wrapper') );
+            });
+
+            FS.change(function(inFS, el) {
+                resizeButtonEl.querySelector('i').className = 'fa fa-inverse fa-' + (inFS ? 'compress' : 'expand');
+                QS('.super-wrapper').style.height = inFS ? 'calc(100% - 5em)' : '';
+                QS('.wrapper').style.height = inFS ? '100%' : '200px';
+            });
 
             var onPlayPause = function(ev) {
                 var evIsPlay = ev.type === 'play';
@@ -156,6 +184,19 @@
             };
             videoEl.addEventListener('play',  onPlayPause);
             videoEl.addEventListener('pause', onPlayPause);
+
+            videoEl.addEventListener('loadstart', function() {
+                var t = videoEl.type;
+                var isLive = (
+                    t.indexOf('rtmp/')                 === 0 ||
+                    t.indexOf('application/x-mpegurl') === 0
+                );
+                timeSliderEl.disabled = isLive;
+                if (isLive) {
+                    timeSliderEl.value = 0;
+                }
+                //console.log(videoEl.src, videoEl.type, isLive);
+            });
 
             volumeSliderEl.addEventListener('change', function(ev) {
                 var f = ev.target.value / 1000;

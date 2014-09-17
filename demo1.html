@@ -7,7 +7,7 @@
 
         <!-- Importing Web Component's Polyfill -->
         <script src="ext/platform.js"></script>
-        <script src="ext/embedSWF.js"></script>
+        <script src="ext/SWF.js"></script>
 
         <!-- Importing Custom Elements -->
         <link rel="import" href="src/vee-dee-oh.html">
@@ -35,7 +35,7 @@
         <h1>vee-dee-oh element demo 1</h1>
 
         <div>
-            <vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" impl="flash">
+            <vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" impl="flash" autoplay>
                 <source type="video/mp4"  src="http://vjs.zencdn.net/v/oceans.mp4">
                 <source type="video/webm" src="http://vjs.zencdn.net/v/oceans.webm">
             </vee-dee-oh>

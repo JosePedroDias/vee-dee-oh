@@ -3,7 +3,7 @@
 
 ## What is this?
 
-A attempt to create a simple yet elegant video abstraction (using video)
+An attempt to create a simple yet elegant video abstraction (using video)
 
 
 ## What it uses
@@ -27,12 +27,7 @@ Check the [index page](http://josepedrodias.github.io/vee-dee-oh/index.html)
 
 ## TODO
 
-* elect best impl for given sources
-* read sources and choose appropriate
-* detect flash support
-* display error and video sources in vee-dee-oh if not supported mime types
 * poster support borked on vjs -> use background-image instead
-* fullscreen support
 
 
 ## Nice to Haves

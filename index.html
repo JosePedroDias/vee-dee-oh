@@ -53,7 +53,7 @@
         <h2>attributes</h2>
 
         <ul>
-            <li><b>impl</b> - either html5 or flash</li>
+            <li><b>autoplay</b> - if present, video will autoplay (if browser allows, most mobile don't)</li>
         </ul>
 
 
@@ -83,8 +83,12 @@
         <h2>properties</h2>
 
         <ul>
+            <li><b>autoplay</b> - if true, video plays automatically.</li>
             <li><b>currentTime</b> - video's current time float in seconds.</li>
             <li><b>duration</b> - duration float in seconds.</li>
+            <li><b>poster</b> - poster image URL.</li>
+            <li><b>src</b> - read-only src URL in use.</li>
+            <li><b>type</b> - read-only mime type in use.</li>
             <li><b>videoWidth</b>  - read-only integer. video width resolution in pixels.</li>
             <li><b>videoHeight</b> - read-only integer. video height resolution in pixels.</li>
             <li><b>volume</b> - volume. float between 0 (mute) and 1 (max).</li>
@@ -95,9 +99,10 @@
         <h2>methods</h2>
 
         <ul>
-            <li><b>isPlaying()</b> - returns true iif video is playing</li>
-            <li><b>pause()</b>- pauses video playback</li>
-            <li><b>play()</b> - starts/resumes video playback</li>
+            <li><b>isPlaying()</b> - returns true iif video is playing.</li>
+            <li><b>load(undefined|Object[])</b> - if no arguments are passed, loads sources from sub-DOM. otherwise expects array of {src, type} objects.</li>
+            <li><b>pause()</b>- pauses video playback.</li>
+            <li><b>play()</b> - starts/resumes video playback.</li>
         </ul>
     </body>
 </html>

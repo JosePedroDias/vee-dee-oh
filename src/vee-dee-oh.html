@@ -6,9 +6,11 @@
     (function(window, document, undefined) {
         'use strict';
 
+        /*jshint laxcomma:true */
 
 
-        var mimeTypes = [
+
+        var flashHttpMimeTypes = [
             'video/mp4',
             'video/x-mp4',
             'video/flv',
@@ -20,12 +22,14 @@
             //'application/x-mpegurl'
         ];
 
-        var rtmpMimeTypes = [
+        var flashRtmpMimeTypes = [
             'rtmp/flv',
             'rtmp/x-flv',
             'rtmp/mp4',
             'rtmp/x-mp4'
         ];
+
+        var flashMimeTypes = flashHttpMimeTypes.concat(flashRtmpMimeTypes);
 
 
 
@@ -72,14 +76,7 @@
                 'video, object { width: 100%; height: 100%; }'
             ].join('\n');
 
-            var impl = this.getAttribute('impl');
-
-            if (impl === 'flash') {
-                this._wireFlash();
-            }
-            else {
-                this._wireHtml5();            
-            }
+            this._chooseSource( this._readSources() );
         };
 
         // fires when an instance was removed from the document
@@ -123,17 +120,90 @@
             else if (this._objectEl) { this._objectEl.vjs_pause(); this._destroyTimeUpdateTimer(); }
         };
 
+        element.load = function(o) {
+            if (!o) { o = this._readSources(); }
+            if (o.length > 0) {
+                this._chooseSource(o);
+            }
+        };
 
+
+
+        element._readSources = function() {
+            var sourceEls = listToArr( this.querySelectorAll('source') );
+            var l = sourceEls.length;
+            var sourcesList = [];
+            var sourceEl;
+            for (var i = l - 1; i >= 0; --i) {
+                sourceEl = sourceEls[i];
+                sourcesList.unshift({
+                    src:  sourceEl.getAttribute('src'),
+                    type: sourceEl.getAttribute('type')
+                });
+                sourceEl.parentNode.removeChild(sourceEl);
+            }
+            return sourcesList;
+        };
+
+        element._chooseSource = function(sources) { // sets _source, _type, _impl and calls appropriate
+            var autoplay = this.hasAttribute('autoplay');
+
+            var el = document.createElement('video');
+            var source, i, I = sources.length;
+            for (i = 0; i < I; ++i) {
+                source = sources[i];
+                if (!!el.play) {
+                    if ( !!( el.canPlayType(source.type).replace(/^no$/, '') ) ) {
+                        this._src  = source.src;
+                        this._type = source.type;
+                        this._wireHtml5(autoplay);
+                        return;
+                    }
+                }
+                if (SWF.isSupported()) {
+                    if (flashMimeTypes.indexOf(source.type) !== -1) {
+                        this._src  = source.src;
+                        this._type = source.type;
+                        this._wireFlash(autoplay);
+                        return;
+                    }
+                }
+            }
+
+            if (sources.length > 0) {
+                this._unwire();
+                this._alertEl = document.createElement('div');
+                var markup = ['unsupported formats:<br/>'];
+                sources.forEach(function(source) {
+                    markup = markup.concat([
+                        '<a target="_blank" href="', source.src, '">', source.src, '</a><br/>'
+                    ]);
+                });
+                this._alertEl.innerHTML = markup.join('');
+                this._rootEl.appendChild(this._alertEl);
+            }
+        };
 
         element._unwire = function() {
             var implEl = this._videoEl || this._objectEl;
             if (implEl) {
+                if (this.isPlaying()) {
+                    this.pause();
+                }
                 this._rootEl.removeChild(implEl);
+                var ev = new Event('pause');
+                this.dispatchEvent(ev);
             }
+            if (this._alertEl) {
+                this._rootEl.removeChild(this._alertEl);
+            }
+            delete this._videoEl;
+            delete this._objectEl;
+            delete this._alertEl;
             delete this._impl;
         };
 
-        element._wireHtml5 = function() {
+        element._wireHtml5 = function(autoplay) {
             this._unwire();
 
             this._impl = 'html5';
@@ -141,15 +211,19 @@
             var videoEl = document.createElement('video');
 
             var poster = this.getAttribute('poster');
-            videoEl.setAttribute('poster', poster);
-            
-            var sourceEls = listToArr( this.querySelectorAll('source') );
-            sourceEls.forEach(function(sourceEl) {
-                videoEl.appendChild( sourceEl );
-            });
+            if (poster) {
+                videoEl.setAttribute('poster', poster);
+            }
+
+            if (autoplay) {
+                videoEl.setAttribute('autoplay', '');
+            }
 
             this._videoEl = videoEl;
             this._rootEl.appendChild(videoEl);
+
+            videoEl.type = this._type;
+            videoEl.src  = this._src;
         };
 
         element._setupTimeUpdateTimer = function() {
@@ -168,15 +242,14 @@
             this.dispatchEvent(ev);
         };
 
-        element._wireFlash = function() {
+        element._wireFlash = function(autoplay) {
             this._unwire();
 
             this._impl = 'flash';
 
-            var sourceEls = listToArr( this.querySelectorAll('source') );
             var item = {
-                type: 'video/mp4',
-                src:  sourceEls[0].getAttribute('src')
+                type: this._type,
+                src:  this._src
             };
 
             var objectEl;
@@ -219,6 +292,10 @@
                         this.dispatchEvent(ev);
                         break;
 
+                    case 'onsrcchange':
+                    case 'rtmpconnected':
+                        break;
+
                     default:
                         console.log('unhandled event', evName);
                 }
@@ -234,9 +311,9 @@
                  readyFunction:           readySymbol
                 ,eventProxyFunction:      eventSymbol
                 ,errorEventProxyFunction: errorSymbol
-                // ,preload: true
-                // ,autoplay: false
+                ,autoplay:                autoplay
                 ,preload:                 'metadata'
+                // ,preload: true
                 // ,preload:                 'auto'
                 // ,autoplay:                'true'
                 // ,debug
@@ -247,7 +324,7 @@
                 // ,poster
             };
 
-            if (rtmpMimeTypes.indexOf(item.type) !== -1) {
+            if (flashRtmpMimeTypes.indexOf(item.type) !== -1) {
                 var lastSlash = item.src.lastIndexOf('/');
                 flashVars.rtmpConnection = item.src.substring(0, lastSlash);
                 flashVars.rtmpStream     = item.src.substring(lastSlash + 1);
@@ -261,8 +338,8 @@
                 flashVars.poster = poster;
             }
 
-            objectEl = embedSWF({
-                swf:       'ext/videojs.swf', // SWF file to load TODO FIX LOCATION
+            objectEl = SWF.embed({
+                swf:       'ext/videojs.swf', // SWF file to load
                 dims:      [1, 1],                   // dimensions in pixels
                 //id:        'vpaid',                  // id and name for object element (if ommitted, random one will be generated)
                 container: this._rootEl,            // container element
@@ -283,7 +360,20 @@
 
         Object.defineProperties(
             element,
-            {
+            {   
+                autoplay: {
+                    get: function() {
+                        return !!this.hasAttribute('autoplay');
+                    },
+                    set: function(p) {
+                        if (p) {
+                            this.setAttribute('autoplay', '');
+                        }
+                        else {
+                            this.removeAttribute('autoplay', '');
+                        }
+                    }
+                },
                 currentTime: {
                     get: function() {
                         if      (this._videoEl) {  return this._videoEl.currentTime;                     }
@@ -298,6 +388,24 @@
                     get: function() {
                         if      (this._videoEl) {  return this._videoEl.duration;           }
                         else if (this._objectEl) { return this._objectEl.vjs_getProperty('duration'); }
+                    }
+                },
+                poster: {
+                    get: function() {
+                        return this.getAttribute('poster');
+                    },
+                    set: function(p) {
+                        return this.setAttribute('poster', p);
+                    }
+                },
+                src: {
+                    get: function() {
+                        return this._src;
+                    }
+                },
+                type: {
+                    get: function() {
+                        return this._type;
                     }
                 },
                 volume: {

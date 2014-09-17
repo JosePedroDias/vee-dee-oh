@@ -86,8 +86,40 @@
         return el;
     };
 
+    var isSWFSupported = function() {
+        /*global ActiveXObject:false */
+        // http://www.jquery4u.com/snippets/jquery-check-flash-enabled/
+        // https://code.google.com/p/swfobject/source/browse/trunk/swfobject/src/swfobject.js line 48
+        var hf = false;
+        var flashVersion;
+        try { // IE
+            var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+            if (fo) { hf = true; }
+            try {
+                flashVersion = parseInt( new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version').split(' ')[1], 10);
+            } catch (e) {}
+        }
+        catch (ex) {
+            try {
+                var plug = navigator.mimeTypes['application/x-shockwave-flash'];
+                if (plug && plug.enabledPlugin) {
+                    hf = true;
+                }
+                try {
+                    flashVersion = parseInt( navigator.plugins["Shockwave Flash"].description.split(' ')[2] , 10);
+                } catch (e) {}
+            }
+            catch (ex2) {}
+        }
+
+        return hf && (flashVersion >= 10);
+    };
 
 
-    window.embedSWF = embedSWF;
+
+    window.SWF = {
+        embed:       embedSWF,
+        isSupported: isSWFSupported
+    };
 
 })();
