@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title></title>
+
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 3em;
+                font-family: sans-serif;
+            }
+
+            h2 {
+                color: #AA3333;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>vee-dee-oh element</h1>
+
+
+
+        <h2>summary</h2>
+
+        <p>
+            Webcomponent which abstracts video element and video-js-swf to playback videos,<br/>
+            supporting both the browsers's supported mime types by its video element<br/>
+            (video/mp4, video/webm, video/ogg, application/x-mpegurl),<br/>
+            along with mime types supported by Flash playback formats<br/>
+            (video/mp4, video/flv, rtmp/mp4, rtmp/flv).
+        </p>
+
+
+
+        <h2>how to use</h2>
+
+<pre><code>&lt;!-- head --&gt;
+&lt;script type="text/javascript" src="http://www.polymer-project.org/components/platform/platform.js"&gt;&lt;/script&gt;
+&lt;script src="http://josepedrodias.github.io/vee-dee-oh/ext/embedSWF.js"&gt;&lt;/script&gt;
+&lt;link rel="import" href="http://josepedrodias.github.io/vee-dee-oh/src/vee-dee-oh.html"&gt;
+
+&lt;!-- body --&gt;
+&lt;vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" impl="flash"&gt;
+&lt;source type="video/mp4"  src="http://vjs.zencdn.net/v/oceans.mp4"&gt;
+&lt;source type="video/webm" src="http://vjs.zencdn.net/v/oceans.webm"&gt;
+&lt;/vee-dee-oh&gt;</code></pre>
+
+
+
+        <h2>attributes</h2>
+
+        <ul>
+            <li><b>impl</b> - either html5 or flash</li>
+        </ul>
+
+
+
+        <h2>events</h2>
+
+        <ul>
+            <li><b>canplay</b></li>
+            <li><b>canplaythrough</b></li>
+            <li><b>click</b></li>
+            <li><b>durationchange</b></li>
+            <li><b>loadeddata</b></li>
+            <li><b>loadedmetadata</b></li>
+            <li><b>loadstart</b></li>
+            <li><b>pause</b></li>
+            <li><b>playing</b></li>
+            <li><b>play</b></li>
+            <li><b>seeking</b></li>
+            <li><b>seeked</b></li>
+            <li><b>volumechange</b></li>
+            <li><b>waiting</b></li>
+            <li><b>timeupdate</b></li>
+        </ul>
+
+
+
+        <h2>properties</h2>
+
+        <ul>
+            <li><b>currentTime</b> - video's current time float in seconds.</li>
+            <li><b>duration</b> - duration float in seconds.</li>
+            <li><b>videoWidth</b>  - read-only integer. video width resolution in pixels.</li>
+            <li><b>videoHeight</b> - read-only integer. video height resolution in pixels.</li>
+            <li><b>volume</b> - volume. float between 0 (mute) and 1 (max).</li>
+        </ul>
+
+
+
+        <h2>methods</h2>
+
+        <ul>
+            <li><b>isPlaying()</b> - returns true iif video is playing</li>
+            <li><b>pause()</b>- pauses video playback</li>
+            <li><b>play()</b> - starts/resumes video playback</li>
+        </ul>
+    </body>
+</html>

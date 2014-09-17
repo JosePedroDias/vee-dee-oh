@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>vee-dee-oh element demo 2</title>
+
+        <!-- Importing Web Component's Polyfill -->
+        <script src="ext/platform.js"></script>
+        <!--<script type="text/javascript" src="http://www.polymer-project.org/components/platform/platform.js"></script>-->
+        <script src="ext/embedSWF.js"></script>
+
+        <!-- Importing Custom Elements -->
+        <link rel="import" href="src/vee-dee-oh.html">
+
+        <!-- http://www.polymer-project.org/docs/elements/paper-elements.html#paper-slider -->
+        <link rel="import" href="http://www.polymer-project.org/components/paper-slider/paper-slider.html">
+
+        <!-- font awesome icons -->
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+        <style type="text/css">
+            body {
+                -webkit-user-select: none;
+                   -moz-user-select: none;
+                    -ms-user-select: none;
+                        user-select: none;
+                -webkit-tap-highlight-color: rgba(0,0,0,0);
+                -webkit-touch-callout: none;
+                font-family: sans-serif;
+            }
+            
+            paper-slider {
+              width: 100%;
+            }
+
+            .super-wrapper {
+                width:    480px; /* video width */
+            }
+
+            .wrapper {
+                width:    100%;
+                height:   200px; /* video height */
+                position: relative;
+            }
+
+            .gui {
+                background-color: #444;
+                font-size: 0;
+                height:     40px;
+            }
+
+            .gui button {
+                width:        40px;
+                height:       40px;
+                font-size:    20px;
+                padding:      0;
+                margin:       0;
+                border-width: 0;
+                background-color: transparent;
+            }
+
+            .gui button:hover,
+            .gui button:focus {
+                background-color: #000;
+            }
+
+            .gui span {
+                font-size: 20px;
+                line-height: 38px;
+                padding: 0 8px;
+                color: #FFF;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>vee-dee-oh element demo 2</h1>
+
+        <div class="super-wrapper">
+            <div class="wrapper">
+                <vee-dee-oh id="video" poster="http://www.videojs.com/img/poster.jpg" impl="flash">
+                    <source type="video/mp4"  src="http://vjs.zencdn.net/v/oceans.mp4">
+                    <source type="video/webm" src="http://vjs.zencdn.net/v/oceans.webm">
+                </vee-dee-oh>
+            </div>
+
+            <div class="gui">
+                <button id="play-pause-button"><i class="fa fa-inverse fa-play"></i></button>
+                <span id="time-span"></span>
+                <span id="duration-span"></span>
+            </div>
+
+            <paper-slider id="volume-slider" min="0" value="1000" max="1000"></paper-slider>
+            <paper-slider id="time-slider"   min="0" value="0"    max="1000"></paper-slider>
+        </div>
+        
+        <script type="text/javascript">
+            var QS = function(sel) { return document.querySelector(sel); };
+
+            var pad00 = function(n) {
+                return (n < 10) ? '0' + n : n;
+            };
+
+            var formatTime = function(t0) {
+                var secs = Math.floor(t0 % 60);
+                var mins = Math.floor(t0 / 60);
+                var h = Math.floor(mins / 60);
+                var arr;
+                if (h > 0) {
+                    mins -= h * 60;
+                    arr = [h, pad00(mins), pad00(secs)];
+                }
+                else {
+                    arr = [mins, pad00(secs)];
+                }
+                return arr.join(':');
+            };
+
+
+
+            var videoEl           = QS('#video');
+            var playPauseButtonEl = QS('#play-pause-button');
+            var volumeSliderEl    = QS('#volume-slider');
+            var timeSliderEl      = QS('#time-slider');
+            var timeSpanEl        = QS('#time-span');
+            var durationSpanEl    = QS('#duration-span');
+
+
+
+            videoEl.addEventListener('durationchange', function() {
+                durationSpanEl.innerHTML = formatTime(videoEl.duration);
+            });
+
+            videoEl.addEventListener('timeupdate', function() {
+                var t = videoEl.currentTime;
+                timeSpanEl.innerHTML = formatTime(t);
+                var d = videoEl.duration;
+                if (isFinite(d)) {
+                    timeSliderEl.value = (t / d * 1000);
+                }
+            });
+
+            playPauseButtonEl.addEventListener('click', function(ev) {
+                if (videoEl.isPlaying()) {
+                    videoEl.pause();
+                }
+                else {
+                    videoEl.play();
+                }
+            })
+
+            var onPlayPause = function(ev) {
+                var evIsPlay = ev.type === 'play';
+                playPauseButtonEl.querySelector('i').className = 'fa fa-inverse fa-' + (evIsPlay ? 'pause' : 'play');
+            };
+            videoEl.addEventListener('play',  onPlayPause);
+            videoEl.addEventListener('pause', onPlayPause);
+
+            volumeSliderEl.addEventListener('change', function(ev) {
+                var f = ev.target.value / 1000;
+                videoEl.volume = f;
+            });
+
+            timeSliderEl.addEventListener('change', function(ev) {
+                var f = ev.target.value / 1000;
+                var d = videoEl.duration;
+                if (isFinite(d)) {
+                    videoEl.currentTime = d * f;
+                }
+            });
+        </script>
+    </body>
+</html>

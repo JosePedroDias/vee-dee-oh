@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>vee-dee-oh element demo 1</title>
+
+        <!-- Importing Web Component's Polyfill -->
+        <script src="ext/platform.js"></script>
+        <script src="ext/embedSWF.js"></script>
+
+        <!-- Importing Custom Elements -->
+        <link rel="import" href="src/vee-dee-oh.html">
+
+        <style type="text/css">
+            body {
+                font-family: sans-serif;
+            }
+
+            div {
+                width:  480px;
+                height: 200px;
+                position: relative;
+            }
+
+            label {
+                width: 10em;
+                display: inline-block;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>vee-dee-oh element demo 1</h1>
+
+        <div>
+            <vee-dee-oh poster="http://www.videojs.com/img/poster.jpg" impl="flash">
+                <source type="video/mp4"  src="http://vjs.zencdn.net/v/oceans.mp4">
+                <source type="video/webm" src="http://vjs.zencdn.net/v/oceans.webm">
+            </vee-dee-oh>
+        </div>
+
+        <label for="duration">duration</label>
+        <span id="duration"></span><br/>
+
+        <label for="size">size</label>
+        <span id="size"></span><br/>
+
+        <label for="last-event">last event</label>
+        <span id="last-event"></span>
+        
+        <script type="text/javascript">
+            var QS = function(sel) { return document.querySelector(sel); };
+
+            var vEl = QS('vee-dee-oh');
+
+            vEl.addEventListener('click',          function() { if (vEl.isPlaying()) { this.pause(); } else { this.play(); } });
+            vEl.addEventListener('durationchange', function() { QS('#duration'  ).innerHTML = vEl.duration.toFixed(1) + ' s'; });
+            vEl.addEventListener('loadedmetadata', function() { QS('#size'      ).innerHTML = [vEl.videoWidth, vEl.videoHeight].join('x') + ' px'; });
+            vEl.addEventListener('timeupdate',     function() { QS('#last-event').innerHTML = vEl.currentTime.toFixed(1) + ' s'; });
+        </script>
+    </body>
+</html>
