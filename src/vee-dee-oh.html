@@ -9,6 +9,10 @@
         /*jshint laxcomma:true */
 
 
+        var ua = navigator.userAgent.toLowerCase();
+        var isAndroid = (/android/).test(ua);
+
+
 
         var flashHttpMimeTypes = [
             'video/mp4',
@@ -138,7 +142,7 @@
                 sourceEl = sourceEls[i];
                 sourcesList.unshift({
                     src:  sourceEl.getAttribute('src'),
-                    type: sourceEl.getAttribute('type')
+                    type: sourceEl.getAttribute('type').toLowerCase()
                 });
                 sourceEl.parentNode.removeChild(sourceEl);
             }
@@ -153,6 +157,13 @@
             for (i = 0; i < I; ++i) {
                 source = sources[i];
                 if (!!el.play) {
+                    // android hack for HLS
+                    if (isAndroid && source.type === 'application/x-mpegurl') {
+                        this._src  = source.src;
+                        this._type = '';
+                        this._wireHtml5(autoplay);
+                        return;
+                    }
                     if ( !!( el.canPlayType(source.type).replace(/^no$/, '') ) ) {
                         this._src  = source.src;
                         this._type = source.type;

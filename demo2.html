@@ -5,6 +5,8 @@
 
         <title>vee-dee-oh element demo 2</title>
 
+        <meta name="viewport" content="width=device-width, user-scalable=yes">
+
         <!-- Importing Web Component's Polyfill -->
         <script src="ext/platform.js"></script>
         <!--<script type="text/javascript" src="http://www.polymer-project.org/components/platform/platform.js"></script>-->
@@ -194,6 +196,8 @@
                 timeSliderEl.disabled = isLive;
                 if (isLive) {
                     timeSliderEl.value = 0;
+                    timeSpanEl.innerHTML = '';
+                    durationSpanEl.innerHTML = 'LIVE';
                 }
                 //console.log(videoEl.src, videoEl.type, isLive);
             });
