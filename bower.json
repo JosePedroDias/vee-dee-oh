@@ -1,6 +1,6 @@
 {
     "name": "vee-dee-oh",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "authors": "José Pedro Dias <jose.pedro.dias@gmail.com>",
     "description": "video element abstraction",
     "license": "MIT",

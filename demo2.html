@@ -67,6 +67,7 @@
                 margin:       0;
                 border-width: 0;
                 background-color: transparent;
+                cursor: pointer;
             }
 
             .gui button:hover,
@@ -79,7 +80,102 @@
                 line-height: 38px;
                 padding: 0 8px;
                 color: #FFF;
+                cursor: default;
             }
+
+            .playlist {
+                font-size: 0;
+                margin-top: 20px;
+            }
+
+            .playlist button {
+                border: 0;
+                margin: 0;
+                padding: 12px;
+                background-color: #333;
+                color: #FFF;
+                margin-right: 1px;
+                cursor: pointer;
+            }
+
+            .playlist button:hover,
+            .playlist button:focus {
+                background-color: orange;
+                color: #000;
+            }
+
+
+
+            /*
+            http://www.html5rocks.com/en/tutorials/webcomponents/shadowdom-201/ 
+
+            The :host allows you to select and style the element hosting a shadow tree:
+
+            :host { text-transform: uppercase; }
+
+            The functional form of :host(<selector>) allows you to target the host element if it matches a <selector>.
+            
+            :host(:hover) { opacity: 1; }
+
+            The :host-context(<selector>) pseudo class matches the host element if it or any of its ancestors matches <selector>.
+
+            A common use of :host-context() is for theming an element based on its surrounds. For example, many people do theming by applying a class to <html> or <body>:
+
+            :host-context(.different) { color: red; }
+
+            The ::shadow pseudo-element and /deep/ combinator are like having a Vorpal sword of CSS authority. They allow piercing through Shadow DOM's boundary to style elements within shadow trees.
+
+            #host::shadow span { color: red; }
+
+            The /deep/ combinator is similar to ::shadow, but more powerful. It completely ignores all shadow boundaries and crosses into any number of shadow trees. Put simply, /deep/ allows you to drill into an element's guts and target any node.
+            
+            x-tabs /deep/ x-panel { ... }
+            */
+
+            paper-slider::shadow #sliderKnobInner {
+                margin-top: 6px; /* was 0 */
+                width: 16px; /* was 12 */
+                height: 16px; /* was 12 */
+            }
+
+            paper-slider::after {
+                float: left;
+                width: 100%;
+                text-align: center;
+                font-weight: bold;
+                margin-top: -10px;
+            }
+
+            #volume-slider::after {
+                content: "VOLUME";
+                color: #799965;
+            }
+
+            #time-slider::after {
+                content: "TIME";
+                color: #705B94;
+            }
+
+            #volume-slider::shadow #sliderKnobInner {
+                background-color: #97C27B;
+            }
+
+            #time-slider::shadow #sliderKnobInner {
+                background-color: #957BC2;
+            }
+
+            paper-slider::shadow paper-progress#sliderBar {
+                height: 8px; /* was 2 */
+            }
+
+            #volume-slider::shadow paper-progress::shadow #activeProgress {
+                background-color: #799965;
+            }
+
+            #time-slider::shadow paper-progress::shadow #activeProgress {
+                background-color: #705B94;
+            }
+
         </style>
     </head>
 
@@ -107,10 +203,12 @@
             <paper-slider id="time-slider"   min="0" value="0"    max="1000"></paper-slider>
         </div>
 
-        <button onclick="load2([{src:'http://www.808.dk/pics/video/gizmo.mp4', type:'video/mp4'}, {src:'http://www.808.dk/pics/video/gizmo.webm', type:'video/webm'}])">load regular video 1</button>
-        <button onclick="load2([{src:'http://vjs.zencdn.net/v/oceans.mp4', type:'video/mp4'}, {src:'http://vjs.zencdn.net/v/oceans.webm', type:'video/webm'}])">load regular video 2</button>
-        <button onclick="load2([{src:'http://213.13.26.42:1935/live/santuario.stream/playlist.m3u8', type:'application/x-mpegurl'}, {src:'rtmp://213.13.26.42/live/santuario.stream', type:'rtmp/mp4'}])">load live video 1</button>
-        <button onclick="load2([{src:'rtmp://77.89.89.10/rtplive/raszkow.stream', type:'rtmp/mp4'}])">load live video 2</button>
+        <div class="playlist">
+            <button onclick="load2([{src:'http://www.808.dk/pics/video/gizmo.mp4', type:'video/mp4'}, {src:'http://www.808.dk/pics/video/gizmo.webm', type:'video/webm'}])">load regular video 1</button>
+            <button onclick="load2([{src:'http://vjs.zencdn.net/v/oceans.mp4', type:'video/mp4'}, {src:'http://vjs.zencdn.net/v/oceans.webm', type:'video/webm'}])">load regular video 2</button>
+            <button onclick="load2([{src:'http://213.13.26.42:1935/live/santuario.stream/playlist.m3u8', type:'application/x-mpegurl'}, {src:'rtmp://213.13.26.42/live/santuario.stream', type:'rtmp/mp4'}])">load live video 1</button>
+            <button onclick="load2([{src:'rtmp://77.89.89.10/rtplive/raszkow.stream', type:'rtmp/mp4'}])">load live video 2</button>
+        </div>
 
         <script type="text/javascript">
             var QS = function(sel) { return document.querySelector(sel); };
